@@ -1,0 +1,17 @@
+{
+  "name": "wp-checklist/wp-checklist",
+  "description": "A simple todo list plugin for wordpress",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Michael",
+      "email": "michaelleemichaellee408@gmail.com",
+      "homepage": "https://fhorla.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "WP_Checklist\\": "inc/"
+    }
+  }
+}
