@@ -5,7 +5,7 @@ function wp_ml_dashboard_widgets() {
     //create a custom dashboard widget
     wp_add_dashboard_widget( 
         'dashboard_todolist',
-        'Create your new task', 
+        'Your Checklist', 
         'wp_ml_list_display',
         'wp_ml_list_setup'
     );
@@ -21,7 +21,7 @@ function wp_ml_list_display() {
         echo '<ul>';
         foreach( $tasks as $task ) {
         ?>  
-            <li><?php echo ucwords( $task ) ?></li>
+            <li>- <?php echo ucwords( $task ) ?></li>
         <?php
         }
         echo '</ul>';
