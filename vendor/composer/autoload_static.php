@@ -22,6 +22,7 @@ class ComposerStaticInita798dd9af14861aabd4104e809fbe767
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'WP_Checklist\\wp_ml_todo_list' => __DIR__ . '/../..' . '/inc/wp_ml_todo_list.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
