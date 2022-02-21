@@ -12,8 +12,6 @@ License: GPLv2
  
 defined( 'ABSPATH' ) || exit;
 
-require_once __DIR__.'/inc/hook_actions/widgets.php';
-
 require __DIR__ . '/vendor/autoload.php';
 
 WP_Checklist\wp_ml_todo_list::wp_ml_execute();
