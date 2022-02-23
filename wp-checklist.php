@@ -13,6 +13,7 @@ License: GPLv2
 defined( 'ABSPATH' ) || exit;
 
 require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/inc/constants.php';
 
-WP_Checklist\wp_ml_todo_list::wp_ml_execute();
+add_action( 'plugins_loaded', [ new WP_Checklist\wp_ml_todo_list, 'wp_ml_execute' ] );
 ?>

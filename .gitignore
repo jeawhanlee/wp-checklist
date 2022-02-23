@@ -1,1 +1,4 @@
 /vendor
+.env
+.env.example
+test.php

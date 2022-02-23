@@ -1,128 +1,57 @@
 <?php
-ob_start();
 
-function wp_ml_dashboard_widgets() {
- 
-    //create a custom dashboard widget
-    wp_add_dashboard_widget( 
-        'dashboard_todolist',
-        'Your Checklist', 
-        'wp_ml_list_display',
-        'wp_ml_list_setup'
-    );
- 
-}
+namespace WP_Checklist\hook_actions;
 
-function wp_ml_list_display() {
-    $tasks = get_option( 'wp_ml_todo' );
+defined( 'ABSPATH' ) || exit;
 
-    // display todos
-    display_todo( $tasks );
-}
+class Widgets extends \WP_Checklist\hook_actions\Actions{
 
-function wp_ml_list_setup() {
-    $tasks = get_option( 'wp_ml_todo' );
+    private $tasks = '';
 
-    // add todo
-    add_todo( $tasks );
+    public function __construct() {
 
-    // remove todo
-    remove_todo( $tasks );
+        $this->tasks = get_option( 'wp_ml_todo' );
+        
+    }
 
-    // complete todo
-    complete_todo( $tasks );
+    public function wp_ml_dashboard_widgets() {
+
+        //create a custom dashboard widget
+        return wp_add_dashboard_widget( 
+                    'dashboard_todolist',
+                    'Your Checklist', 
+                    [$this, 'wp_ml_list_display'],
+                    [$this, 'wp_ml_list_setup']
+                );
+    }
+
+    public function wp_ml_list_display() {
     
-    display_todo( $tasks, true );
-}
+        // display todos
+        return $this->display_todo( $this->tasks );
 
-function add_todo( $tasks ) {
+    }
 
-    if( isset( $_POST['wp_ml_todo'] ) ){
+    public function wp_ml_list_setup() {
 
-        $todo = $_POST['wp_ml_todo'];
-        $date_added = date("Y-m-d");
-        $id = date('ymdhis');
+        // add todo
+        $this->add_todo( $this->tasks );
 
-        $task[$id] = [ $todo, $date_added, "pending" ];
+        // remove todo
+        $this->remove_todo( $this->tasks );
 
-        if( !empty( $tasks ) ){
-            $tasks = json_decode( $tasks, true );
+        // complete todo
+        $this->complete_todo( $this->tasks );
 
-            foreach( $tasks as $task_id => $meta ) {
-                $task[$task_id] = $meta;
-            }
-        }
-        
-        $task = json_encode( $task );
+        // display todos
+        return $this->display_todo( $this->tasks, true );
+    }
 
-        update_option( 'wp_ml_todo', $task );
+    public function display_todo( $tasks, $config = false ) {
+  
+        require_once CONFIG['app_path'] . 'view/todos.php';
+
     }
 }
 
-function remove_todo( $tasks ){
 
-    if( isset( $_GET['remove'] ) ){
-
-        $task_id = $_GET['task_id'];
-
-        $tasks = json_decode( $tasks, true );
-        unset( $tasks[$task_id] );
-
-        $tasks = !empty( $tasks ) ? json_encode( $tasks ) : '';
-        update_option( 'wp_ml_todo', $tasks );
-
-        wp_safe_redirect( admin_url() );
-        exit;
-    }
-}
-
-function complete_todo( $tasks ){
-    if( isset( $_GET['complete'] ) ){
-
-        $task_id = $_GET['task_id'];
-
-        $tasks = json_decode( $tasks, true );
-        $tasks[$task_id][2] = 'completed';
-
-        $tasks = json_encode( $tasks );
-        update_option( 'wp_ml_todo', $tasks );
-
-        wp_safe_redirect( admin_url() );
-        exit;
-    }
-}
-
-function display_todo( string $tasks, $config = false ){
-
-    if( !empty( $tasks ) ) {
-        $tasks = json_decode( $tasks, true );
-        
-        echo '<ul>';
-        foreach( $tasks as $task_id => $meta ) {
-            $task_entity = explode('-', $task);
-            $date = date_create( $meta[1] );
-        ?>  
-            <li>
-                <strong <?php echo $meta[2] == 'completed' ? 'style="text-decoration:line-through"' : '' ?> ><?php echo ucwords( $meta[0] ) ?></strong>
-                <br />
-                <small><?php echo date_format( $date, 'd/m/Y' ) ?></small> | 
-                <?php if( $config ): ?> 
-                    <a href="<?php echo admin_url() ?>?edit=dashboard_todolist&complete=true&task_id=<?php echo $task_id ?>#dashboard_todolist" style="color:green">Mark as complete</a> | 
-                    <a href="<?php echo admin_url() ?>?edit=dashboard_todolist&remove=true&task_id=<?php echo $task_id ?>#dashboard_todolist" style="color:red">Remove</a>
-                <?php else: ?>
-                    <small><?php echo ucfirst($meta[2]) ?></small>
-                <?php endif ?>
-            </li>
-        <?php
-        }
-        echo '</ul>';
-    }
-    else {
-        echo '<p>No task added</p>';
-    }
-
-    // display form if config
-    if( $config ) {
-        echo '<input type="text" name="wp_ml_todo" placeholder="Add a new task" style="margin-bottom:10px;width:100%" />';
-    }
-}
