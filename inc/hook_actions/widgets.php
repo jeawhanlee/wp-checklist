@@ -6,14 +6,6 @@ defined( 'ABSPATH' ) || exit;
 
 class Widgets extends \WP_Checklist\hook_actions\Actions{
 
-    private $tasks = '';
-
-    public function __construct() {
-
-        $this->tasks = get_option( 'wp_ml_todo' );
-        
-    }
-
     public function wp_ml_dashboard_widgets() {
 
         //create a custom dashboard widget
@@ -35,13 +27,13 @@ class Widgets extends \WP_Checklist\hook_actions\Actions{
     public function wp_ml_list_setup() {
 
         // add todo
-        $this->add_todo( $this->tasks );
+        $this->add_todo();
 
         // remove todo
-        $this->remove_todo( $this->tasks );
+        $this->remove_todo();
 
         // complete todo
-        $this->complete_todo( $this->tasks );
+        $this->complete_todo();
 
         // display todos
         return $this->display_todo( $this->tasks, true );

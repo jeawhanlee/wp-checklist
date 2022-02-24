@@ -6,7 +6,15 @@ defined( 'ABSPATH' ) || exit;
 
 class Actions{
 
-    protected function add_todo( $tasks ) {
+    protected $tasks = [];
+
+    public function __construct() {
+
+        $this->tasks = get_option( 'wp_ml_todo' );
+
+    }
+
+    protected function add_todo() {
 
         if( isset( $_POST['wp_ml_todo'] ) ){
 
@@ -16,10 +24,8 @@ class Actions{
     
             $task[$id] = [ $todo, $date_added, "pending" ];
     
-            if( !empty( $tasks ) ){
-                $tasks = $tasks;
-    
-                foreach( $tasks as $task_id => $meta ) {
+            if( !empty( $this->tasks ) ){
+                foreach( $this->tasks as $task_id => $meta ) {
                     $task[$task_id] = $meta;
                 }
             }
@@ -28,18 +34,15 @@ class Actions{
         }
     }
 
-    protected function remove_todo( $tasks ) {
+    protected function remove_todo() {
 
         if( isset( $_GET['remove'] ) ){
 
             $task_id = $_GET['task_id'];
     
-            $tasks = (array) $tasks;
-            unset( $tasks[$task_id] );
-    
-            $tasks = !empty( $tasks ) ?  $tasks : '';
+            unset( $this->tasks[$task_id] );
             
-            update_option( 'wp_ml_todo', $tasks );
+            update_option( 'wp_ml_todo', !empty( $this->tasks ) ? $this->tasks : '' );
     
             wp_safe_redirect( admin_url() );
             exit;
@@ -47,17 +50,15 @@ class Actions{
 
     }
 
-    protected function complete_todo( $tasks ) {
+    protected function complete_todo() {
 
         if( isset( $_GET['complete'] ) ){
 
             $task_id = $_GET['task_id'];
+
+            $this->tasks[$task_id][2] = 'completed';
     
-            $tasks = (array) $tasks;
-            $tasks[$task_id][2] = 'completed';
-    
-            $tasks = $tasks;
-            update_option( 'wp_ml_todo', $tasks );
+            update_option( 'wp_ml_todo', $this->tasks );
     
             wp_safe_redirect( admin_url() );
             exit;
