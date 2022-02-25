@@ -17,5 +17,5 @@ ob_start();
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/inc/constants.php';
 
-add_action( 'plugins_loaded', [ new WP_Checklist\wp_ml_todo_list, 'wp_ml_execute' ] );
+add_action( 'plugins_loaded', [ new WP_Checklist\hook_actions\Widgets, 'wp_ml_execute' ] );
 ?>

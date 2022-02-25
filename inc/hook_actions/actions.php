@@ -5,65 +5,83 @@ namespace WP_Checklist\hook_actions;
 defined( 'ABSPATH' ) || exit;
 
 class Actions {
-
-
+    
+    /**
+     * hold task array
+     *
+     * @var array
+     */
 	protected $tasks = array();
 
+    /**
+     * get all task on inst
+     */
 	public function __construct() {
 
-		$this->tasks = get_option( 'wp_ml_todo' );
+		$this->tasks = get_option( 'wp_ml_todo' ) ?: [];
 
 	}
 
+    /**
+     * Create new todo
+     *
+     * @return void
+     */
 	protected function add_todo() {
 
-		if ( isset( $_POST['wp_ml_todo'] ) ) {
+		if ( ! isset( $_POST['wp_ml_todo'] ) ) {
+            return;
+        }
 
-			$todo       = $_POST['wp_ml_todo'];
-			$date_added = date( 'Y-m-d' );
-			$id         = date( 'ymdhis' );
+        $todo       = $_POST['wp_ml_todo'];
+        $date_added = date( 'Y-m-d' );
+        $id         = date( 'ymdhis' );
 
-			$task[ $id ] = array( $todo, $date_added, 'pending' );
+        $this->tasks[ $id ] = array( $todo, $date_added, 'pending' );
 
-			if ( ! empty( $this->tasks ) ) {
-				foreach ( $this->tasks as $task_id => $meta ) {
-					$task[ $task_id ] = $meta;
-				}
-			}
-
-			update_option( 'wp_ml_todo', $task );
-		}
+        update_option( 'wp_ml_todo', $this->tasks );
 	}
 
+    /**
+     * remove todo from array
+     *
+     * @return void
+     */
 	protected function remove_todo() {
 
-		if ( isset( $_GET['remove'] ) ) {
+		if ( ! isset( $_GET['remove'] ) ) {
+            return;
+        }
 
-			$task_id = $_GET['task_id'];
+        $task_id = $_GET['task_id'];
 
-			unset( $this->tasks[ $task_id ] );
+        unset( $this->tasks[ $task_id ] );
 
-			update_option( 'wp_ml_todo', ! empty( $this->tasks ) ? $this->tasks : '' );
+        update_option( 'wp_ml_todo', ! empty( $this->tasks ) ? $this->tasks : '' );
 
-			wp_safe_redirect( admin_url() );
-			exit;
-		}
-
+        wp_safe_redirect( admin_url() );
+        exit;
 	}
 
+    /**
+     * set todo as complete
+     *
+     * @return void
+     */
 	protected function complete_todo() {
 
-		if ( isset( $_GET['complete'] ) ) {
+        if ( ! isset( $_GET['complete'] ) ) {
+            return;
+        }
 
-			$task_id = $_GET['task_id'];
+        $task_id = $_GET['task_id'];
 
-			$this->tasks[ $task_id ][2] = 'completed';
+        $this->tasks[ $task_id ][2] = 'completed';
 
-			update_option( 'wp_ml_todo', $this->tasks );
+        update_option( 'wp_ml_todo', $this->tasks );
 
-			wp_safe_redirect( admin_url() );
-			exit;
-		}
+        wp_safe_redirect( admin_url() );
+        exit;
 	}
 }
 
